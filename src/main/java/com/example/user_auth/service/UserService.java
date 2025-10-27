@@ -5,6 +5,8 @@ import com.example.user_auth.model.dto.UserDTO;
 import com.example.user_auth.model.entity.Permission;
 import com.example.user_auth.model.entity.Roles;
 import com.example.user_auth.model.entity.User;
+import com.example.user_auth.model.mapper.PermissionMapper;
+import com.example.user_auth.model.mapper.UserMapper;
 import com.example.user_auth.reporistory.RolesRepo;
 import com.example.user_auth.reporistory.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +35,23 @@ public class UserService {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private PermissionMapper permissionMapper;
     public List<UserDTO> findAllUser(){
-        return userRepo.findAll().stream().map(u->new UserDTO(u)).toList();
+        return userMapper.toListDTO(userRepo.findAll());
     }
 
-    public Optional<UserDTO> findById(long userId){
-        return userRepo.findById(userId).map(u->new UserDTO(u));
+    public UserDTO findById(long userId){
+        return userMapper.toDTO(userRepo.findById(userId)
+                .orElseThrow(()->new ResourceNotFoundException("not found username")));
     }
 
-    public Optional<UserDTO> findByUsername(String username){
-        return userRepo.findByUsername(username).map(u->new UserDTO(u));
+    public UserDTO findByUsername(String username){
+        return userMapper.toDTO(userRepo.findByUsername(username)
+                .orElseThrow(()-> new ResourceNotFoundException("not found username")));
     }
     public Optional<User> findByUsernameU(String username){
         return userRepo.findByUsername(username);
@@ -65,7 +74,7 @@ public class UserService {
         }
 
         User usersaved=userRepo.save(user);
-        return new UserDTO(usersaved);
+        return userMapper.toDTO(usersaved);
 
 
     }
@@ -80,7 +89,7 @@ public class UserService {
             user.setRoles(roles);
         }
         User userUpdate=userRepo.save(user);
-        return new UserDTO(userUpdate);
+        return userMapper.toDTO(userUpdate);
     }
 
     public void deleteUser(long userId){
@@ -92,15 +101,13 @@ public class UserService {
     }
 
     public List<UserDTO> getAllUser(){
-        return userRepo.findAll().stream()
-                .map(user->new UserDTO(user))
-                .toList();
+        return userMapper.toListDTO(userRepo.findAll());
     }
 
     public UserDTO addRole(Roles roles,long userId){
         User user=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("not found username"));
         user.addRole(roles);
-        return new UserDTO(userRepo.save(user));
+        return userMapper.toDTO(userRepo.save(user));
     }
     public void deleteUser(Long user_id){
 
@@ -111,23 +118,22 @@ public class UserService {
     }
 
     public List<UserDTO> findUsernameEnabled(boolean enable){
-        return userRepo.findByUsernameAndEnabled(enable).stream()
-                .map(user->new UserDTO(user))
-                .toList();
+        return userMapper.toListDTO(userRepo.findByUsernameAndEnabled(enable));
     }
     public UserDTO desableAccount(long userId){
         User user=userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("not found username"));
         user.setEnabled(false);
         userRepo.save(user);
-        return new UserDTO(user);
+        return userMapper.toDTO(user);
     }
 
     public UserDTO assignPermission(Long user_id,String permissionName){
         User user=userRepo.findById(user_id)
                 .orElseThrow(()->new ResourceNotFoundException("not found username"));
-        Permission permission =permissionService.findPermissionByName(permissionName).get().toPermission();
+        Permission permission =permissionMapper.toEntity(permissionService.findPermissionByName(permissionName)
+                .orElseThrow(()->new ResourceNotFoundException("not found permission")));;
         user.addPermission(permission);
-        return  new UserDTO(userRepo.save(user));
+        return  userMapper.toDTO(userRepo.save(user));
     }
 
     public boolean hasPermission(String action,String resource){

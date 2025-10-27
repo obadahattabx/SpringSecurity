@@ -11,9 +11,5 @@ import lombok.NoArgsConstructor;
 public class RolesDTO {
     private long id;
     private String name;
-    public RolesDTO(Roles roles){
-        this.id=roles.getId();
-        this.name=roles.getName();
 
-    }
 }

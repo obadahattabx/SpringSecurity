@@ -27,8 +27,7 @@ public class UserController {
     @GetMapping("/getUser")
     @PreAuthorize("hasRole('ADMIN') or #id == principal.user.id")
     public ResponseEntity<UserDTO> getUserByID(@RequestParam Long id){
-        return new ResponseEntity<>(userService.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("not found username")),HttpStatus.OK);
+        return new ResponseEntity<>(userService.findById(id),HttpStatus.OK);
     }
     @GetMapping("/getUserEnable")
     @PreAuthorize("@userService.hasPermission('read','user')")

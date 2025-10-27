@@ -16,20 +16,5 @@ public class PermissionDTO {
     private String resourceType;
     private String action;
 
-    public PermissionDTO(Permission permission){
-        this.id=permission.getId();
-        this.name=permission.getName();
-        this.resourceType=permission.getResourceType();
-        this.action=permission.getAction();
-    }
-
-    public Permission toPermission(){
-        Permission p=new Permission();
-        p.setId(this.id);
-        p.setName(this.name);
-        p.setResourceType(this.resourceType);
-        p.setAction(this.action);
-        return p;
-    }
 
 }

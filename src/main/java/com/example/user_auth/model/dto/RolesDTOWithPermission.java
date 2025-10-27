@@ -15,12 +15,6 @@ public class RolesDTOWithPermission {
     private String name;
     private List<PermissionDTO> permissions;
 
-    public RolesDTOWithPermission(Roles roles){
-        this.id=roles.getId();
-        this.name=roles.getName();
-        this.permissions=roles.getPermissions().stream()
-                .map(permission -> new PermissionDTO(permission))
-                .toList();
-    }
+
 
 }

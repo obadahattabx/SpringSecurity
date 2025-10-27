@@ -20,14 +20,5 @@ public class UserDTO {
     private List<PermissionDTO> permissions;
 
 
-    public UserDTO(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.enabled = user.isEnabled();
-        this.roles = user.getRoles().stream()
-                .map(roles1 -> new RolesDTO(roles1)).toList();
-        this.permissions=user.getPermissions().stream()
-                .map(permission -> new PermissionDTO(permission))
-                .toList();
-    }
+
 }
